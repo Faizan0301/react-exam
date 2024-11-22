@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMovie } from '../features/movies/movieSlice';
+import Navbar from './navbar';
 
 function Movies() {
     const dispatch = useDispatch();
+    const [searchTerm,setSearchTerm]=useState('')
 
     const { movies, loading, error } = useSelector((state) => state.movie);
 
@@ -13,16 +15,25 @@ function Movies() {
 
     }, [dispatch]);
 
+    const filteredMovie = movies.filter(movie =>
+        movie.Title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: { error }</div>;
 
     return (
         <>
+            <Navbar handleSearch={handleSearch}/>
             <h1 className='text-center my-5'>Movies</h1>
             <ul>
                 <div className="container">
                     <div className="row justify-content-center">
-                        { movies.map((movie) => (
+                        { filteredMovie.map((movie) => (
                             <div className="col-md-3 mb-3">
                                 <div className="card" style={ { width: '18rem' } }>
                                     <img src={ movie.Poster } className="card-img-top" alt="..." />
